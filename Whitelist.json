@@ -94,5 +94,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8663891626&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "FGFunneh",
+        "RobloxID": "667882138",
+        "Discord": "713590234109181964",
+        "Whitelist": "Ultimate",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=667882138&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
