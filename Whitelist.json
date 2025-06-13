@@ -118,5 +118,13 @@
         "Whitelist": "Standard",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5369279633&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "isiah32",
+        "RobloxID": "37969206",
+        "Discord": "1336725567625625619",
+        "Whitelist": "Staff",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=37969206&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
