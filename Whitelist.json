@@ -126,5 +126,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=37969206&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "devannoza",
+        "RobloxID": "8576837516",
+        "Discord": "659365406938497045",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8576837516&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
