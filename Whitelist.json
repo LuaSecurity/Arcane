@@ -142,5 +142,13 @@
         "Whitelist": "Ultimate",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8617705120&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "Sevenahl",
+        "RobloxID": "1758142744",
+        "Discord": "1317462672651845756",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1758142744&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
