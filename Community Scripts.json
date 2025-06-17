@@ -1,1 +1,15 @@
-
+[
+    {
+        "Name": "test",
+        "Script": "test\n```",
+        "SubmittedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "ApprovedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "ApprovedAtUTC": "2025-06-17T18:26:38.270335+00:00"
+    }
+]
