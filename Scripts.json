@@ -1,1 +1,11 @@
-
+[
+    {
+        "Name": "Sensation Safe",
+        "Script": "require(85380043749737)(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-06-17T21:50:27.177438+00:00"
+    }
+]
