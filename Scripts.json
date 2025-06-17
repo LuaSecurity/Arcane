@@ -7,5 +7,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-06-17T21:50:27.177438+00:00"
+    },
+    {
+        "Name": "Dex (Premium)",
+        "Script": "require(14572394952)(\"Username\") -- Premium Only",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-06-17T21:51:06.693543+00:00"
     }
 ]
