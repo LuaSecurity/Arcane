@@ -222,5 +222,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8471254417&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "jakuza622_2",
+        "RobloxID": "3360793591",
+        "Discord": "748474956131729449",
+        "Whitelist": "Staff",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=3360793591&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
