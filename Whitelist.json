@@ -230,5 +230,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=3360793591&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "GWsavage17",
+        "RobloxID": "1336077992",
+        "Discord": "1030460657092542495",
+        "Whitelist": "Premium",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1336077992&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
