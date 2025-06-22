@@ -262,5 +262,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=313272663&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "0xyrn0",
+        "RobloxID": "4684654144",
+        "Discord": "1027288717938917467",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=4684654144&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
