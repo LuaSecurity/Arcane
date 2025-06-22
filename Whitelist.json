@@ -254,5 +254,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8024609382&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "dylanisthecoolguy",
+        "RobloxID": "313272663",
+        "Discord": "763473142773055518",
+        "Whitelist": "Premium",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=313272663&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
