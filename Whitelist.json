@@ -254,5 +254,13 @@
         "Whitelist": "Standard",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5205513697&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "004GAx",
+        "RobloxID": "8024609382",
+        "Discord": "1171490586889572425",
+        "Whitelist": "Staff",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8024609382&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
