@@ -34,5 +34,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-06-28T19:02:00.186050+00:00"
+    },
+    {
+        "Name": "Goner (Standard)",
+        "Script": "require(4513235536).G(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-06-28T19:02:17.231737+00:00"
     }
 ]
