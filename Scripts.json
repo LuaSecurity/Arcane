@@ -25,5 +25,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-06-28T19:00:49.217238+00:00"
+    },
+    {
+        "Name": "Sledge Hammer (Premium)",
+        "Script": "require(0x1DF1AB9B4).CLoad(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-06-28T19:02:00.186050+00:00"
     }
 ]
