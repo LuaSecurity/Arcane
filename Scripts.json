@@ -16,5 +16,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-06-17T21:51:06.693543+00:00"
+    },
+    {
+        "Name": "Server Admin",
+        "Script": "require(4665394711).load(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-06-28T19:00:05.365108+00:00"
     }
 ]
