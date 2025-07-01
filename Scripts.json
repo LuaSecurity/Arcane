@@ -61,5 +61,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-07-01T16:16:49.077144+00:00"
+    },
+    {
+        "Name": "Mr. bye bye (Standard)",
+        "Script": "require(0xB4AF21B4):Start(\"Username\",'AAA')",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-07-01T16:18:34.450326+00:00"
     }
 ]
