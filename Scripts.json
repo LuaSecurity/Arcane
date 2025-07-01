@@ -52,5 +52,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-07-01T16:15:50.668701+00:00"
+    },
+    {
+        "Name": "Grab Knife V4 (Premium)",
+        "Script": "require(18665717275).load(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-07-01T16:16:49.077144+00:00"
     }
 ]
