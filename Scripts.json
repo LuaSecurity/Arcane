@@ -79,5 +79,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-07-01T16:19:01.495301+00:00"
+    },
+    {
+        "Name": "Lunatic (Standard)",
+        "Script": "require(5813708464).load(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-07-01T16:19:25.982840+00:00"
     }
 ]
