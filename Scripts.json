@@ -43,5 +43,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-06-28T19:02:17.231737+00:00"
+    },
+    {
+        "Name": "Xester (Standard)",
+        "Script": "require(6099241563).load(\"Username\")",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-07-01T16:15:50.668701+00:00"
     }
 ]
