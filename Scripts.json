@@ -88,5 +88,14 @@
             "name": "heatrelax"
         },
         "AddedAtUTC": "2025-07-01T16:19:25.982840+00:00"
+    },
+    {
+        "Name": "Emoji god (Premium)",
+        "Script": "require(5823684505).load('Username')",
+        "AddedBy": {
+            "id": "1246471078486737037",
+            "name": "heatrelax"
+        },
+        "AddedAtUTC": "2025-07-01T16:20:00.803914+00:00"
     }
 ]
