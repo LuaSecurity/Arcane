@@ -294,5 +294,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8536192745&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "roblox_egorplayer",
+        "RobloxID": "8814241956",
+        "Discord": "1226783768488968226",
+        "Whitelist": "Premium",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8814241956&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
