@@ -294,5 +294,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5556902250&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "Shivermetimbersmaty",
+        "RobloxID": "4412543490",
+        "Discord": "862685983711559720",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=4412543490&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
