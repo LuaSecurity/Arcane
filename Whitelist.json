@@ -310,5 +310,13 @@
         "Whitelist": "Standard",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8688358176&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "drakeinformation",
+        "RobloxID": "8780475536",
+        "Discord": "876529018529259530",
+        "Whitelist": "Staff",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8780475536&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
