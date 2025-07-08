@@ -342,5 +342,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1862533691&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "sampsa303",
+        "RobloxID": "5645382607",
+        "Discord": "1019022803489542175",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5645382607&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
