@@ -350,5 +350,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=750212289&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "Brano3456",
+        "RobloxID": "3229098872",
+        "Discord": "869609354465255526",
+        "Whitelist": "Ultimate",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=3229098872&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
