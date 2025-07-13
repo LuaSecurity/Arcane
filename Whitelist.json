@@ -382,5 +382,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5509970429&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "zeinkhair0905",
+        "RobloxID": "1930576450",
+        "Discord": "1324586184810430574",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=1930576450&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
