@@ -414,5 +414,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=8918400633&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "HELLOmyDUMfriend",
+        "RobloxID": "2499494874",
+        "Discord": "845406909967630336",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=2499494874&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
