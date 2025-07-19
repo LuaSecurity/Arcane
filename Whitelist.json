@@ -438,5 +438,13 @@
         "Whitelist": "Staff",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=4443326826&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "HeatRelax",
+        "RobloxID": "12046170",
+        "Discord": "1246471078486737037",
+        "Whitelist": "Owner",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=12046170&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
