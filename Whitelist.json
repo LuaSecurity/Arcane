@@ -446,5 +446,13 @@
         "Whitelist": "Owner",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=12046170&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "DERIL23909",
+        "RobloxID": "3587967751",
+        "Discord": "1044561193672642571",
+        "Whitelist": "Ultimate",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=3587967751&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
