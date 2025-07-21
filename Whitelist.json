@@ -462,5 +462,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=4350782212&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "Jamaludinpeot",
+        "RobloxID": "5268717424",
+        "Discord": "1345955938259177533",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=5268717424&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
