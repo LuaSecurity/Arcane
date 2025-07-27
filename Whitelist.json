@@ -502,5 +502,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=7956889829&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "Flestyrrr",
+        "RobloxID": "6183866170",
+        "Discord": "1197698015297798237",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=6183866170&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
