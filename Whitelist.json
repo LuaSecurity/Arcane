@@ -542,5 +542,13 @@
         "Whitelist": "Premium",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=9095515&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "emoboy_gaming27",
+        "RobloxID": "7652381355",
+        "Discord": "1396266581792915498",
+        "Whitelist": "Standard",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=7652381355&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
