@@ -550,5 +550,13 @@
         "Whitelist": "Standard",
         "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=334920833&size=420x420&format=Png&isCircular=false",
         "Key": ""
+    },
+    {
+        "User": "annaerb123456789",
+        "RobloxID": "9095515",
+        "Discord": "1377006842722521192",
+        "Whitelist": "Premium",
+        "Avatar": "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=9095515&size=420x420&format=Png&isCircular=false",
+        "Key": ""
     }
 ]
