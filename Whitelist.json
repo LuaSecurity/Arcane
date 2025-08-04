@@ -62,5 +62,13 @@
         "DiscordId": "1206938374112288768",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1206938374112288768/1e3413474b7534747970af2b24b74e60.png?size=1024",
         "Whitelist": "Standard"
+    },
+    {
+        "RobloxId": "1336077992",
+        "RobloxUsername": "GWsavage17",
+        "DiscordUsername": "gwsavage17",
+        "DiscordId": "1030460657092542495",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1030460657092542495/b4030d7f6d71b09a741821f5343a72be.png?size=1024",
+        "Whitelist": "Premium"
     }
 ]
