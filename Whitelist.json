@@ -110,5 +110,13 @@
         "DiscordId": "593901586204590080",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/593901586204590080/0c331f01a13dadb869a53f3c9ccaf5bf.png?size=1024",
         "Whitelist": "Standard"
+    },
+    {
+        "RobloxId": "3360793591",
+        "RobloxUsername": "jakuza622_2",
+        "DiscordUsername": "0ae",
+        "DiscordId": "748474956131729449",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/748474956131729449/30767ca8c7bd7bccfce3547fe39276b9.png?size=1024",
+        "Whitelist": "Staff"
     }
 ]
