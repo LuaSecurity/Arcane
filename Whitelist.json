@@ -230,5 +230,13 @@
         "DiscordId": "1246471078486737037",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1246471078486737037/00d814811c47545476439c4a8d30a4f8.png?size=1024",
         "Whitelist": "Owner"
+    },
+    {
+        "RobloxId": "9258401975",
+        "RobloxUsername": "hirammasa01",
+        "DiscordUsername": "kqanflix",
+        "DiscordId": "1208003222284009504",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1208003222284009504/ec5be97e6348dda1133d40cc4ebc751c.webp?size=1024",
+        "Whitelist": "Standard"
     }
 ]
