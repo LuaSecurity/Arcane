@@ -270,5 +270,13 @@
         "DiscordId": "771127562172497920",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/771127562172497920/a_46e2fb9e3c7ce7e01f818814c86e52c3.gif?size=1024",
         "Whitelist": "Standard"
+    },
+    {
+        "RobloxId": "8934120403",
+        "RobloxUsername": "Tavedi4",
+        "DiscordUsername": "tavedi.",
+        "DiscordId": "900330428974653480",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/900330428974653480/69451a3ac9c45b4ca10c902011ec101a.png?size=1024",
+        "Whitelist": "Ultimate"
     }
 ]
