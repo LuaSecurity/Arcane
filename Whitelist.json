@@ -286,5 +286,13 @@
         "DiscordId": "1044561193672642571",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1044561193672642571/399d21973b70508f0d4548bdf756c471.png?size=1024",
         "Whitelist": "Ultimate"
+    },
+    {
+        "RobloxId": "4055978266",
+        "RobloxUsername": "VRBoyGamingYT",
+        "DiscordUsername": "im_still_a_nobody",
+        "DiscordId": "883564379910578279",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/883564379910578279/e3b6756ee63867c1fcb5dd2cac930136.png?size=1024",
+        "Whitelist": "Standard"
     }
 ]
