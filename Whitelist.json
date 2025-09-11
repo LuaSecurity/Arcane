@@ -294,5 +294,13 @@
         "DiscordId": "1256210446050922569",
         "DiscordImageUrl": "https://cdn.discordapp.com/embed/avatars/4.png",
         "Whitelist": "Standard"
+    },
+    {
+        "RobloxId": "750212289",
+        "RobloxUsername": "papillg",
+        "DiscordUsername": "valt0725",
+        "DiscordId": "1356121687677997158",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1356121687677997158/6287a7d960f302887fd15a800b58c01d.png?size=1024",
+        "Whitelist": "Staff"
     }
 ]
