@@ -358,5 +358,13 @@
         "DiscordId": "1186817371353133137",
         "DiscordImageUrl": "https://cdn.discordapp.com/avatars/1186817371353133137/219a97e352f0d6e48c131c788cdbf81c.png?size=1024",
         "Whitelist": "Ultimate"
+    },
+    {
+        "RobloxId": "8020476032",
+        "RobloxUsername": "DESERT_BOT44",
+        "DiscordUsername": "0x64_entity",
+        "DiscordId": "845406909967630336",
+        "DiscordImageUrl": "https://cdn.discordapp.com/avatars/845406909967630336/49bd7757c2cf5287e0996ab46028099e.png?size=1024",
+        "Whitelist": "Standard"
     }
 ]
