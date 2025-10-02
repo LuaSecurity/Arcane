@@ -2,20 +2,24 @@ import sys
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QCheckBox, QStackedWidget, QSlider, QFrame,
-    QLineEdit, QGridLayout, QSizePolicy, QToolTip
+    QLineEdit, QGridLayout, QSizePolicy, QToolTip, QGraphicsView,
+    QGraphicsScene
 )
-from PyQt5.QtCore import Qt, QPoint, QSize
-from PyQt5.QtGui import QIcon, QPixmap, QFont 
+from PyQt5.QtCore import Qt, QPoint, QSize, QTimer
+from PyQt5.QtGui import QIcon, QPixmap, QFont, QPainter, QPen
+import keyboard
+import win32gui
+import win32con
 
 THEMES = {
-    "DARK": { 
-        "BG_DARKER": "#060606",  # RGB(6, 6, 6)
-        "BG_MAIN": "#101010",    # RGB(16, 16, 16)
-        "BG_ELEM": "#2c2e36",
-        "TEXT_MAIN": "#808080",  # RGB(128, 128, 128)
-        "ACCENT": "#FFFFFF",     # RGB(255, 255, 255)
-        "ACCENT_RED": "#FF5555",
-        "BORDER": "#808080",     # RGB(128, 128, 128)
+    "DARK": {
+        "BG_DARKER": "#2E3440",  # Nord0
+        "BG_MAIN": "#3B4252",    # Nord1
+        "BG_ELEM": "#4C566A",    # Nord2
+        "TEXT_MAIN": "#ECEFF4",  # Nord6
+        "ACCENT": "#88C0D0",     # Nord8
+        "ACCENT_RED": "#BF616A", # Nord11
+        "BORDER": "#5E81AC",     # Nord10
     },
     "AMETHYST": {
         "BG_DARKER": "#181227",
@@ -302,6 +306,10 @@ class ArcaneSlider(QWidget):
     def value(self):
         return self.slider.value()
 
+    def setValue(self, value):
+        self.slider.setValue(value)
+        self._update_value_label(value)
+
 class ArcaneButton(QPushButton):
     def __init__(self, text, tooltip="", parent=None):
         super().__init__(text, parent)
@@ -324,12 +332,15 @@ class ArcaneSection(QFrame):
         title_label = QLabel(title)
         title_label.setObjectName("section_title")
         self.layout.addWidget(title_label)
-        
+
 class ArcaneCheckBox(QCheckBox):
     def __init__(self, text="", tooltip="", parent=None):
         super().__init__(text, parent)
         if tooltip: self.setToolTip(tooltip)
         self.setCursor(Qt.PointingHandCursor)
+
+    def setValue(self, value):
+        self.setChecked(value)
 
 class ArcaneFlagCheckBox(QCheckBox):
     def __init__(self, text="", color_flag=None, tooltip="", parent=None):
@@ -349,21 +360,107 @@ class ArcaneFlagCheckBox(QCheckBox):
         elif self.color_flag == "black":
             self.setStyleSheet(style + f" QCheckBox::indicator:checked {{ background-color: {colors['BG_DARKER']}; border: 2px solid {colors['BG_DARKER']}; }}")
 
+    def setValue(self, value):
+        self.setChecked(value)
+
 class ArcaneLineEdit(QLineEdit):
     def __init__(self, default_text="", tooltip="", parent=None):
         super().__init__(default_text, parent)
         if tooltip: self.setToolTip(tooltip)
 
-class ArcaneUI(QMainWindow):
-    def __init__(self, title="Arcane UI", size=QSize(1050, 750), theme_name="DARK"):
-        super().__init__()
+    def setValue(self, value):
+        self.setText(str(value))
+
+class ArcaneOverlay(QWidget):
+    def __init__(self, config, parent=None):
+        super().__init__(parent)
+        self.title = config.get("Title", "Overlay")
+        self.size = config.get("Size", QSize(1920, 1080))
+        self.draw_callback = config.get("DrawCallback", None)
+        self.update_interval = config.get("UpdateInterval", 1)  # in milliseconds
+
+        self.setWindowTitle(self.title)
+        self.setGeometry(0, 0, self.size.width(), self.size.height())
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setAttribute(Qt.WA_NoSystemBackground)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
         
+        hwnd = self.winId()
+        win32gui.SetWindowLong(hwnd, win32con.GWL_EXSTYLE, win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT)
+
+        self.scene = QGraphicsScene(self)
+        self.view = QGraphicsView(self.scene, self)
+        self.view.setGeometry(0, 0, self.size.width(), self.size.height())
+        self.view.setRenderHint(QPainter.Antialiasing)
+        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setStyleSheet("background: transparent; border: none;")
+        self.view.setSceneRect(0, 0, self.size.width(), self.size.height())
+        self.view.setFrameShape(QFrame.NoFrame)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_scene)
+        self.timer.start(self.update_interval)
+
+    def update_scene(self):
+        self.scene.clear()
+        if self.draw_callback:
+            try:
+                self.draw_callback(self.scene)
+            except Exception as e:
+                print(f"Overlay draw error: {e}")
+
+class ArcaneUI:
+    def __init__(self):
+        self.app = QApplication.instance() or QApplication(sys.argv)
+        self.windows = []
+        self.overlays = []
+        self.options = {}  # Store controls for easy access
+        self.is_visible = True
+        self.minimize_key = None
+        self.keybind_callback = None
+
+    def CreateWindow(self, config):
+        window = ArcaneWindow(config, self)
+        self.windows.append(window)
+        return window
+
+    def CreateOverlay(self, config):
+        overlay = ArcaneOverlay(config)
+        self.overlays.append(overlay)
+        return overlay
+
+    def Notify(self, config):
+        # Placeholder for notification system (not implemented in this example)
+        print(f"Notification: {config.get('Title', '')} - {config.get('Content', '')}")
+
+    def SetMinimizeKey(self, key):
+        self.minimize_key = key
+        keyboard.add_hotkey(key, self.toggle_visibility)
+
+    def toggle_visibility(self):
+        self.is_visible = not self.is_visible
+        for window in self.windows:
+            if self.is_visible:
+                window.show()
+            else:
+                window.hide()
+
+    def run(self):
+        for window in self.windows:
+            window.show()
+        for overlay in self.overlays:
+            overlay.show()
+        sys.exit(self.app.exec_())
+
+class ArcaneWindow(QMainWindow):
+    def __init__(self, config, ui_instance):
+        super().__init__()
+        self.ui_instance = ui_instance
         self.theme_sensitive_controls = []
         
-        QApplication.instance().current_arcane_theme = theme_name 
-        
-        self.setWindowTitle(title)
-        # Handle size as either QSize or tuple
+        self.setWindowTitle(config.get("Title", "Arcane UI"))
+        size = config.get("Size", QSize(1050, 750))
         if isinstance(size, tuple):
             width, height = size
             self.setGeometry(100, 100, width, height)
@@ -379,9 +476,9 @@ class ArcaneUI(QMainWindow):
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
         
-        self._setup_sidebar_layout(title)
+        self._setup_sidebar_layout(config.get("Title", "Arcane UI"))
         self._setup_content_area()
-        self.set_theme(theme_name)
+        self.set_theme(config.get("Theme", "DARK"))
 
         self.category_buttons = []
         self._drag_position = QPoint()
@@ -396,7 +493,7 @@ class ArcaneUI(QMainWindow):
         self.sidebar_layout.setContentsMargins(0, 0, 0, 0)
         self.sidebar_layout.setSpacing(8)
         
-        title_lines = [line.strip() for line in title.split()]
+        title_lines = [line.strip() for line in title.split("\n")]
         brand_label = ArcaneTitleLabel("\n".join(title_lines))
         self.sidebar_layout.addWidget(brand_label)
         
@@ -406,7 +503,6 @@ class ArcaneUI(QMainWindow):
         self.sidebar_layout.addLayout(self.sidebar_button_container)
 
         self.sidebar_layout.addStretch()
-
         self.main_layout.addWidget(self.sidebar_widget)
 
     def _setup_content_area(self):
@@ -423,7 +519,7 @@ class ArcaneUI(QMainWindow):
         
         self.sub_tab_container = QWidget()
         self.sub_tab_layout = QHBoxLayout(self.sub_tab_container)
-        self.sub_tab_layout.setContentsMargins(0,0,0,0)
+        self.sub_tab_layout.setContentsMargins(0, 0, 0, 0)
         self.sub_tab_layout.setSpacing(15)
         self.sub_tab_layout.setAlignment(Qt.AlignLeft)
         self.top_bar_layout.addWidget(self.sub_tab_container)
@@ -440,7 +536,7 @@ class ArcaneUI(QMainWindow):
         self.main_layout.addWidget(self.content_widget_container)
 
     def set_theme(self, theme_name):
-        QApplication.instance().current_arcane_theme = theme_name
+        self.ui_instance.app.current_arcane_theme = theme_name
         self.setStyleSheet(generate_stylesheet(theme_name))
         colors = THEMES.get(theme_name.upper(), THEMES["DARK"])
         
@@ -462,19 +558,20 @@ class ArcaneUI(QMainWindow):
             self.move(event.globalPos() - self._drag_position)
             event.accept()
 
-    def Tab(self, name, icon_name="settings"):
+    def CreateTab(self, config):
         tab_widget = QWidget()
-        tab_widget.setObjectName(name)
+        tab_widget.setObjectName(config.get("Title", ""))
         self.content_stack.addWidget(tab_widget)
         
         main_tab_layout = QVBoxLayout(tab_widget)
-        main_tab_layout.setContentsMargins(0,0,0,0)
+        main_tab_layout.setContentsMargins(0, 0, 0, 0)
         main_tab_layout.setSpacing(30)
         
-        btn = QPushButton(name)
+        btn = QPushButton(config.get("Title", ""))
         btn.setObjectName("SidebarCategoryButton")
         btn.setCheckable(True)
         
+        icon_name = config.get("Icon", "settings")
         icon_path = get_lucide_icon_path(icon_name)
         pixmap = QPixmap(icon_path)
         if not pixmap.isNull():
@@ -489,7 +586,11 @@ class ArcaneUI(QMainWindow):
         self.category_buttons.append(btn)
         self.sidebar_button_container.addWidget(btn)
         
-        return ArcaneTab(main_tab_layout, self.sub_tab_layout, self)
+        return ArcaneTab(main_tab_layout, self.sub_tab_layout, self, self.ui_instance)
+
+    def SelectTab(self, index):
+        if 0 <= index < len(self.category_buttons):
+            self._activate_tab(self.content_stack.widget(index), self.category_buttons[index])
 
     def _activate_tab(self, tab_widget, button):
         for btn in self.category_buttons:
@@ -506,9 +607,10 @@ class ArcaneUI(QMainWindow):
         button.setChecked(True)
 
 class ArcaneTab:
-    def __init__(self, main_tab_layout, sub_tab_container_layout, ui_instance):
+    def __init__(self, main_tab_layout, sub_tab_container_layout, window_instance, ui_instance):
         self.main_tab_layout = main_tab_layout
         self.sub_tab_container_layout = sub_tab_container_layout 
+        self.window_instance = window_instance
         self.ui_instance = ui_instance
 
         self.section_grid_layout = QGridLayout()
@@ -532,8 +634,9 @@ class ArcaneTab:
         self.sub_tab_container_layout.addWidget(btn)
         return self
 
-    def Section(self, name, tooltip=""):
-        section_widget = ArcaneSection(name, tooltip)
+    def Section(self, name, config=None):
+        config = config or {}
+        section_widget = ArcaneSection(name, config.get("Tooltip", ""))
         
         self.section_grid_layout.addWidget(section_widget, self.current_grid_row, self.current_grid_col)
         
@@ -542,6 +645,61 @@ class ArcaneTab:
             self.current_grid_row += 1
             
         return ArcaneSectionContainer(section_widget.layout, self.ui_instance)
+
+    def AddParagraph(self, name, config):
+        section = self.Section(name, config)
+        label = section.Label(config.get("Content", ""), style="normal", tooltip=config.get("Tooltip", ""))
+        label.setWordWrap(True)
+        label.setAlignment({
+            "Left": Qt.AlignLeft,
+            "Middle": Qt.AlignHCenter,
+            "Right": Qt.AlignRight
+        }.get(config.get("ContentAlignment", "Left"), Qt.AlignLeft))
+        return label
+
+    def AddButton(self, name, config):
+        section = self.Section(name, config)
+        return section.Button({
+            "Title": config.get("Title", ""),
+            "Tooltip": config.get("Description", ""),
+            "Callback": config.get("Callback", lambda x: None)
+        })
+
+    def AddToggle(self, name, config):
+        section = self.Section(name, config)
+        toggle = section.Toggle({
+            "Title": config.get("Title", ""),
+            "Toggled": config.get("Default", False),
+            "Tooltip": config.get("Description", ""),
+            "Callback": config.get("Callback", lambda x: None)
+        })
+        self.ui_instance.options[name] = toggle
+        return toggle
+
+    def AddSlider(self, name, config):
+        section = self.Section(name, config)
+        slider = section.Slider({
+            "Title": config.get("Title", ""),
+            "Min": config.get("Min", 0),
+            "Max": config.get("Max", 100),
+            "Default": config.get("Default", 50),
+            "Step": config.get("Rounding", 1),
+            "Tooltip": config.get("Description", ""),
+            "Callback": config.get("Callback", lambda x: None)
+        })
+        self.ui_instance.options[name] = slider
+        return slider
+
+    def AddInput(self, name, config):
+        section = self.Section(name, config)
+        textbox = section.TextBox({
+            "Title": config.get("Title", ""),
+            "Default": config.get("Default", ""),
+            "Tooltip": config.get("Description", ""),
+            "Callback": config.get("Callback", lambda x: None)
+        })
+        self.ui_instance.options[name] = textbox
+        return textbox
 
 class ArcaneSectionContainer:
     def __init__(self, layout, ui_instance):
@@ -598,7 +756,7 @@ class ArcaneSectionContainer:
     def TextBox(self, config):
         container = QWidget()
         container_layout = QVBoxLayout(container)
-        container_layout.setContentsMargins(0,0,0,0)
+        container_layout.setContentsMargins(0, 0, 0, 0)
         
         container_layout.addWidget(QLabel(config["Title"]))
         textbox = ArcaneLineEdit(config.get("Default", ""), config.get("Tooltip", ""))
