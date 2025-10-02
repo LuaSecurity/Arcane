@@ -380,7 +380,12 @@ class ArcaneOverlay(QWidget):
         self.update_interval = config.get("UpdateInterval", 1)  # in milliseconds
 
         self.setWindowTitle(self.title)
-        self.setGeometry(0, 0, self.size.width(), self.size.height())
+        # Handle both tuple and QSize for size
+        if isinstance(self.size, tuple):
+            width, height = self.size
+        else:
+            width, height = self.size.width(), self.size.height()
+        self.setGeometry(0, 0, width, height)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool)
@@ -390,12 +395,12 @@ class ArcaneOverlay(QWidget):
 
         self.scene = QGraphicsScene(self)
         self.view = QGraphicsView(self.scene, self)
-        self.view.setGeometry(0, 0, self.size.width(), self.size.height())
+        self.view.setGeometry(0, 0, width, height)
         self.view.setRenderHint(QPainter.Antialiasing)
         self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.view.setStyleSheet("background: transparent; border: none;")
-        self.view.setSceneRect(0, 0, self.size.width(), self.size.height())
+        self.view.setSceneRect(0, 0, width, height)
         self.view.setFrameShape(QFrame.NoFrame)
 
         self.timer = QTimer(self)
@@ -464,9 +469,9 @@ class ArcaneWindow(QMainWindow):
         size = config.get("Size", QSize(1050, 750))
         if isinstance(size, tuple):
             width, height = size
-            self.setGeometry(100, 100, width, height)
         else:
-            self.setGeometry(100, 100, size.width(), size.height())
+            width, height = size.width(), size.height()
+        self.setGeometry(100, 100, width, height)
         self.setWindowFlags(Qt.FramelessWindowHint)
         
         self.main_frame = QFrame()
