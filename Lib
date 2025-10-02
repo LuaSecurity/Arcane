@@ -1,0 +1,611 @@
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QLabel, QCheckBox, QStackedWidget, QSlider, QFrame,
+    QLineEdit, QGridLayout, QSizePolicy, QToolTip
+)
+from PyQt5.QtCore import Qt, QPoint, QSize
+from PyQt5.QtGui import QIcon, QPixmap, QFont 
+
+THEMES = {
+    "DARK": { 
+        "BG_DARKER": "#060606",  # RGB(6, 6, 6)
+        "BG_MAIN": "#101010",    # RGB(16, 16, 16)
+        "BG_ELEM": "#2c2e36",
+        "TEXT_MAIN": "#808080",  # RGB(128, 128, 128)
+        "ACCENT": "#FFFFFF",     # RGB(255, 255, 255)
+        "ACCENT_RED": "#FF5555",
+        "BORDER": "#808080",     # RGB(128, 128, 128)
+    },
+    "AMETHYST": {
+        "BG_DARKER": "#181227",
+        "BG_MAIN": "#1f1a30",
+        "BG_ELEM": "#3c3352",
+        "TEXT_MAIN": "#e6e6eb",
+        "ACCENT": "#c084fc",
+        "ACCENT_RED": "#ff6b6b",
+        "BORDER": "#524b6b",
+    },
+    "WHITE": {
+        "BG_DARKER": "#f8f9fa",
+        "BG_MAIN": "#e9ecef",
+        "BG_ELEM": "#dee2e6",
+        "TEXT_MAIN": "#212529",
+        "ACCENT": "#007bff",
+        "ACCENT_RED": "#dc3545",
+        "BORDER": "#ced4da",
+    },
+    "CYBERPUNK": {
+        "BG_DARKER": "#0d1b2a",
+        "BG_MAIN": "#1b263b",
+        "BG_ELEM": "#2a3d5c",
+        "TEXT_MAIN": "#a3bffa",
+        "ACCENT": "#00f5d4",
+        "ACCENT_RED": "#ff0054",
+        "BORDER": "#415a77",
+    },
+}
+
+def generate_stylesheet(theme_name="DARK"):
+    colors = THEMES.get(theme_name.upper(), THEMES["DARK"])
+    
+    BORDER_RADIUS_MAIN = "14px"
+    BORDER_RADIUS_ELEM = "8px"
+    
+    if theme_name.upper() == "WHITE":
+        text_bright = colors["TEXT_MAIN"]
+        active_text = colors["BG_DARKER"] 
+    else:
+        text_bright = "#f1f2f6"
+        active_text = "#ffffff"
+
+    QToolTip.setFont(QFont("Segoe UI", 10))
+    tooltip_bg = colors["BG_DARKER"] if theme_name.upper() != "WHITE" else colors["TEXT_MAIN"]
+    tooltip_text = active_text if theme_name.upper() != "WHITE" else colors["BG_DARKER"]
+    QApplication.instance().setStyleSheet(f"""
+        QToolTip {{
+            background-color: {tooltip_bg};
+            color: {tooltip_text};
+            border: 2px solid {colors["ACCENT"]};
+            border-radius: 8px;
+            padding: 6px;
+            font-size: 10pt;
+        }}
+    """)
+
+    return f"""
+    QWidget {{
+        color: {colors["TEXT_MAIN"]};
+        background-color: {colors["BG_MAIN"]};
+        font-family: "Segoe UI", sans-serif;
+        font-size: 11pt;
+    }}
+    QMainWindow {{ border: none; }}
+
+    #MainWindowFrame {{
+        border: 2px solid {colors["BORDER"]};
+        border-radius: {BORDER_RADIUS_MAIN}; 
+    }}
+
+    #Sidebar {{
+        background-color: {colors["BG_DARKER"]};
+        border-radius: {BORDER_RADIUS_MAIN} 0 0 {BORDER_RADIUS_MAIN}; 
+        padding: 25px 0; 
+    }}
+    #SidebarCategoryButton {{
+        background-color: transparent; 
+        border: none;
+        color: {colors["TEXT_MAIN"]};
+        padding: 14px 20px; 
+        font-size: 12pt;
+        text-align: left;
+        transition: all 0.3s ease;
+    }}
+    #SidebarCategoryButton:hover {{
+        background-color: {colors["BG_ELEM"]};
+        color: {text_bright};
+        transform: scale(1.02);
+    }}
+    #SidebarCategoryButton:checked {{
+        background-color: {colors["BG_ELEM"]};
+        color: {active_text};
+        border-left: 5px solid {colors["ACCENT"]};
+        font-weight: 700;
+    }}
+    #SidebarCategoryButton::icon {{
+        width: 22px; 
+        height: 22px;
+        padding-right: 14px;
+        margin-left: 10px;
+    }}
+    .ArcaneTitleLabel {{
+        font-size: 22pt; 
+        font-weight: 800;
+        color: {colors["ACCENT"]};
+        margin: 25px 20px 35px 20px; 
+        text-shadow: 0 0 5px {colors["ACCENT"]};
+    }}
+
+    #ContentArea {{
+        padding: 35px;
+        background-color: {colors["BG_MAIN"]};
+        border-radius: 0 {BORDER_RADIUS_MAIN} {BORDER_RADIUS_MAIN} 0;
+    }}
+
+    #SubTabButton {{
+        background-color: {colors["BG_DARKER"]};
+        border: 2px solid {colors["BORDER"]};
+        color: {colors["TEXT_MAIN"]};
+        padding: 12px 24px;
+        border-radius: {BORDER_RADIUS_ELEM};
+        margin-right: 12px;
+        transition: all 0.3s ease;
+    }}
+    #SubTabButton:hover {{
+        background-color: {colors["BORDER"]};
+        color: {text_bright};
+        transform: scale(1.05);
+    }}
+    #SubTabButton:checked {{
+        background-color: {colors["ACCENT"]};
+        color: {active_text};
+        font-weight: 700;
+        border: 2px solid {colors["ACCENT"]};
+    }}
+
+    .ArcaneSection {{
+        background-color: {colors["BG_DARKER"]};
+        border: 2px solid {colors["BORDER"]};
+        border-radius: {BORDER_RADIUS_ELEM};
+        padding: 25px;
+        transition: all 0.3s ease;
+    }}
+    .ArcaneSection:hover {{
+        border-color: {colors["ACCENT"]};
+        box-shadow: 0 0 10px {colors["ACCENT"]}50;
+    }}
+    .ArcaneSection QLabel[class="section_title"] {{ 
+        font-weight: 700;
+        color: {text_bright};
+        margin-bottom: 15px;
+        font-size: 12pt;
+    }}
+
+    .ArcaneButton {{
+        background-color: {colors["BG_ELEM"]};
+        border: 2px solid {colors["BORDER"]};
+        border-radius: {BORDER_RADIUS_ELEM};
+        padding: 12px 15px;
+        min-height: 32px;
+        transition: all 0.3s ease;
+    }}
+    .ArcaneButton:hover {{
+        background-color: {colors["BORDER"]};
+        border-color: {colors["ACCENT"]};
+        color: {text_bright};
+        transform: scale(1.05);
+    }}
+    .ArcaneButton:pressed {{
+        background-color: {colors["ACCENT"]};
+        color: {colors["BG_MAIN"]};
+        border-color: {colors["ACCENT"]};
+        transform: scale(0.95);
+    }} 
+
+    QCheckBox {{
+        spacing: 14px;
+        padding: 6px 0;
+        transition: all 0.3s ease;
+    }} 
+    QCheckBox::indicator {{
+        background-color: {colors["BG_ELEM"]};
+        border: 2px solid {colors["BORDER"]};
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+    }}
+    QCheckBox::indicator:checked {{
+        background-color: {colors["ACCENT"]};
+        border: 2px solid {colors["ACCENT"]};
+    }}
+    QCheckBox::indicator:hover {{
+        border-color: {colors["ACCENT"]};
+        box-shadow: 0 0 5px {colors["ACCENT"]}50;
+    }}
+    
+    QSlider::groove:horizontal {{
+        border: 2px solid {colors["BORDER"]};
+        height: 12px; 
+        background: {colors["BG_ELEM"]};
+        margin: 2px 0;
+        border-radius: 6px;
+    }}
+    QSlider::handle:horizontal {{
+        background: {colors["ACCENT"]};
+        border: 2px solid {colors["ACCENT"]};
+        width: 18px;
+        margin: -5px 0;
+        border-radius: 9px;
+        transition: all 0.3s ease;
+    }}
+    QSlider::sub-page:horizontal {{
+        background: {colors["ACCENT"]};
+        border: 2px solid {colors["ACCENT"]};
+        border-radius: 6px;
+    }}
+    QSlider::handle:horizontal:hover {{
+        background: {colors["TEXT_MAIN"]};
+        transform: scale(1.1);
+    }}
+    
+    QLineEdit {{
+        background-color: {colors["BG_DARKER"]};
+        border: 2px solid {colors["BORDER"]};
+        padding: 10px;
+        border-radius: {BORDER_RADIUS_ELEM};
+        color: {text_bright};
+        transition: all 0.3s ease;
+    }}
+    QLineEdit:focus {{
+        border-color: {colors["ACCENT"]};
+        background-color: {colors["BG_ELEM"]};
+        box-shadow: 0 0 8px {colors["ACCENT"]}50;
+    }}
+    """
+
+def get_lucide_icon_path(icon_name):
+    return f"icons/{icon_name.lower()}.png"
+
+class ArcaneTitleLabel(QLabel):
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent)
+        self.setObjectName("ArcaneTitleLabel")
+        self.setProperty("class", "ArcaneTitleLabel")
+        self.setAlignment(Qt.AlignTop | Qt.AlignHCenter)
+
+class ArcaneSlider(QWidget):
+    def __init__(self, name, min_val, max_val, default_val, step=1, tooltip="", parent=None):
+        super().__init__(parent)
+        self.name = name
+        if tooltip: self.setToolTip(tooltip)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSpacing(8)
+        
+        name_value_layout = QHBoxLayout()
+        name_label = QLabel(self.name)
+        self.value_label = QLabel(f"{default_val}")
+        
+        self._update_value_label_color()
+        
+        name_value_layout.addWidget(name_label)
+        name_value_layout.addStretch()
+        name_value_layout.addWidget(self.value_label)
+        self.layout.addLayout(name_value_layout)
+        
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.setRange(min_val, max_val)
+        self.slider.setSingleStep(step)
+        self.slider.setValue(default_val)
+        self.slider.valueChanged.connect(self._update_value_label)
+        self.layout.addWidget(self.slider)
+
+    def _update_value_label(self, value):
+        self.value_label.setText(f"{value}")
+    
+    def _update_value_label_color(self):
+        current_theme_name = getattr(QApplication.instance(), 'current_arcane_theme', "DARK")
+        colors = THEMES.get(current_theme_name.upper(), THEMES["DARK"])
+        self.value_label.setStyleSheet(f"font-weight: 700; color: {colors['ACCENT']};")
+
+    def value(self):
+        return self.slider.value()
+
+class ArcaneButton(QPushButton):
+    def __init__(self, text, tooltip="", parent=None):
+        super().__init__(text, parent)
+        self.setObjectName("ArcaneButton")
+        self.setCursor(Qt.PointingHandCursor)
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        if tooltip: self.setToolTip(tooltip)
+
+class ArcaneSection(QFrame):
+    def __init__(self, title, tooltip="", parent=None):
+        super().__init__(parent)
+        self.setObjectName("ArcaneSection")
+        self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed) 
+        if tooltip: self.setToolTip(tooltip)
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setContentsMargins(25, 25, 25, 25)
+        self.layout.setSpacing(15)
+        
+        title_label = QLabel(title)
+        title_label.setObjectName("section_title")
+        self.layout.addWidget(title_label)
+        
+class ArcaneCheckBox(QCheckBox):
+    def __init__(self, text="", tooltip="", parent=None):
+        super().__init__(text, parent)
+        if tooltip: self.setToolTip(tooltip)
+        self.setCursor(Qt.PointingHandCursor)
+
+class ArcaneFlagCheckBox(QCheckBox):
+    def __init__(self, text="", color_flag=None, tooltip="", parent=None):
+        super().__init__(text, parent)
+        self.color_flag = color_flag
+        if tooltip: self.setToolTip(tooltip)
+        self.setCursor(Qt.PointingHandCursor)
+        self._apply_flag_color()
+
+    def _apply_flag_color(self):
+        current_theme_name = getattr(QApplication.instance(), 'current_arcane_theme', "DARK")
+        colors = THEMES.get(current_theme_name.upper(), THEMES["DARK"])
+        
+        style = self.styleSheet()
+        if self.color_flag == "red":
+            self.setStyleSheet(style + f" QCheckBox::indicator:checked {{ background-color: {colors['ACCENT_RED']}; border: 2px solid {colors['ACCENT_RED']}; }}")
+        elif self.color_flag == "black":
+            self.setStyleSheet(style + f" QCheckBox::indicator:checked {{ background-color: {colors['BG_DARKER']}; border: 2px solid {colors['BG_DARKER']}; }}")
+
+class ArcaneLineEdit(QLineEdit):
+    def __init__(self, default_text="", tooltip="", parent=None):
+        super().__init__(default_text, parent)
+        if tooltip: self.setToolTip(tooltip)
+
+class ArcaneUI(QMainWindow):
+    def __init__(self, title="Arcane UI", size=QSize(1050, 750), theme_name="DARK"):
+        super().__init__()
+        
+        self.theme_sensitive_controls = []
+        
+        QApplication.instance().current_arcane_theme = theme_name 
+        
+        self.setWindowTitle(title)
+        # Handle size as either QSize or tuple
+        if isinstance(size, tuple):
+            width, height = size
+            self.setGeometry(100, 100, width, height)
+        else:
+            self.setGeometry(100, 100, size.width(), size.height())
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        
+        self.main_frame = QFrame()
+        self.main_frame.setObjectName("MainWindowFrame")
+        self.setCentralWidget(self.main_frame)
+        
+        self.main_layout = QHBoxLayout(self.main_frame)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setSpacing(0)
+        
+        self._setup_sidebar_layout(title)
+        self._setup_content_area()
+        self.set_theme(theme_name)
+
+        self.category_buttons = []
+        self._drag_position = QPoint()
+
+    def _setup_sidebar_layout(self, title):
+        self.sidebar_widget = QWidget()
+        self.sidebar_widget.setObjectName("Sidebar")
+        self.sidebar_widget.setFixedWidth(240)
+        
+        self.sidebar_layout = QVBoxLayout(self.sidebar_widget)
+        self.sidebar_layout.setAlignment(Qt.AlignTop)
+        self.sidebar_layout.setContentsMargins(0, 0, 0, 0)
+        self.sidebar_layout.setSpacing(8)
+        
+        title_lines = [line.strip() for line in title.split()]
+        brand_label = ArcaneTitleLabel("\n".join(title_lines))
+        self.sidebar_layout.addWidget(brand_label)
+        
+        self.sidebar_button_container = QVBoxLayout()
+        self.sidebar_button_container.setContentsMargins(0, 0, 0, 0)
+        self.sidebar_button_container.setSpacing(4)
+        self.sidebar_layout.addLayout(self.sidebar_button_container)
+
+        self.sidebar_layout.addStretch()
+
+        self.main_layout.addWidget(self.sidebar_widget)
+
+    def _setup_content_area(self):
+        self.content_widget_container = QWidget()
+        self.content_layout = QVBoxLayout(self.content_widget_container)
+        self.content_layout.setContentsMargins(0, 0, 0, 0)
+        self.content_layout.setSpacing(0)
+
+        self.top_bar_widget = QWidget()
+        self.top_bar_layout = QHBoxLayout(self.top_bar_widget)
+        self.top_bar_layout.setContentsMargins(0, 0, 0, 0)
+        self.top_bar_layout.setSpacing(15)
+        self.top_bar_layout.setAlignment(Qt.AlignLeft)
+        
+        self.sub_tab_container = QWidget()
+        self.sub_tab_layout = QHBoxLayout(self.sub_tab_container)
+        self.sub_tab_layout.setContentsMargins(0,0,0,0)
+        self.sub_tab_layout.setSpacing(15)
+        self.sub_tab_layout.setAlignment(Qt.AlignLeft)
+        self.top_bar_layout.addWidget(self.sub_tab_container)
+
+        self.top_bar_layout.addStretch()
+        
+        self.content_layout.addWidget(self.top_bar_widget)
+        self.content_layout.addSpacing(30)
+
+        self.content_stack = QStackedWidget()
+        self.content_stack.setObjectName("ContentArea")
+        self.content_layout.addWidget(self.content_stack)
+        
+        self.main_layout.addWidget(self.content_widget_container)
+
+    def set_theme(self, theme_name):
+        QApplication.instance().current_arcane_theme = theme_name
+        self.setStyleSheet(generate_stylesheet(theme_name))
+        colors = THEMES.get(theme_name.upper(), THEMES["DARK"])
+        
+        self.main_frame.setStyleSheet(f"#MainWindowFrame {{border: 2px solid {colors['BORDER']}; border-radius: 14px;}}")
+
+        for control in self.theme_sensitive_controls:
+            if hasattr(control, '_update_value_label_color'):
+                control._update_value_label_color()
+            elif hasattr(control, '_apply_flag_color'):
+                control._apply_flag_color()
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._drag_position = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            self.move(event.globalPos() - self._drag_position)
+            event.accept()
+
+    def Tab(self, name, icon_name="settings"):
+        tab_widget = QWidget()
+        tab_widget.setObjectName(name)
+        self.content_stack.addWidget(tab_widget)
+        
+        main_tab_layout = QVBoxLayout(tab_widget)
+        main_tab_layout.setContentsMargins(0,0,0,0)
+        main_tab_layout.setSpacing(30)
+        
+        btn = QPushButton(name)
+        btn.setObjectName("SidebarCategoryButton")
+        btn.setCheckable(True)
+        
+        icon_path = get_lucide_icon_path(icon_name)
+        pixmap = QPixmap(icon_path)
+        if not pixmap.isNull():
+            btn.setIcon(QIcon(pixmap))
+            btn.setIconSize(QSize(22, 22))
+        
+        btn.clicked.connect(lambda checked, w=tab_widget: self._activate_tab(w, btn))
+        
+        if not self.category_buttons:
+            self._activate_tab(tab_widget, btn)
+        
+        self.category_buttons.append(btn)
+        self.sidebar_button_container.addWidget(btn)
+        
+        return ArcaneTab(main_tab_layout, self.sub_tab_layout, self)
+
+    def _activate_tab(self, tab_widget, button):
+        for btn in self.category_buttons:
+            if btn != button:
+                btn.setChecked(False)
+        
+        for i in reversed(range(self.sub_tab_layout.count())):
+            widget = self.sub_tab_layout.itemAt(i).widget()
+            if widget:
+                widget.setParent(None)
+                widget.deleteLater()
+        
+        self.content_stack.setCurrentWidget(tab_widget)
+        button.setChecked(True)
+
+class ArcaneTab:
+    def __init__(self, main_tab_layout, sub_tab_container_layout, ui_instance):
+        self.main_tab_layout = main_tab_layout
+        self.sub_tab_container_layout = sub_tab_container_layout 
+        self.ui_instance = ui_instance
+
+        self.section_grid_layout = QGridLayout()
+        self.section_grid_layout.setHorizontalSpacing(30)
+        self.section_grid_layout.setVerticalSpacing(30)
+        self.current_grid_row = 0
+        self.current_grid_col = 0
+        
+        self.main_tab_layout.addLayout(self.section_grid_layout)
+        self.sub_tab_buttons = []
+
+    def SubTab(self, name):
+        btn = QPushButton(name)
+        btn.setObjectName("SubTabButton")
+        btn.setCheckable(True)
+        
+        if not self.sub_tab_buttons:
+            btn.setChecked(True)
+        
+        self.sub_tab_buttons.append(btn)
+        self.sub_tab_container_layout.addWidget(btn)
+        return self
+
+    def Section(self, name, tooltip=""):
+        section_widget = ArcaneSection(name, tooltip)
+        
+        self.section_grid_layout.addWidget(section_widget, self.current_grid_row, self.current_grid_col)
+        
+        self.current_grid_col = (self.current_grid_col + 1) % 2
+        if self.current_grid_col == 0:
+            self.current_grid_row += 1
+            
+        return ArcaneSectionContainer(section_widget.layout, self.ui_instance)
+
+class ArcaneSectionContainer:
+    def __init__(self, layout, ui_instance):
+        self.layout = layout
+        self.ui_instance = ui_instance
+
+    def Label(self, text, style='normal', tooltip=""):
+        label = QLabel(text)
+        if style == 'bold':
+            label.setStyleSheet("font-weight: 700;")
+        if tooltip: label.setToolTip(tooltip)
+        self.layout.addWidget(label)
+        return label
+
+    def Button(self, config):
+        btn = ArcaneButton(config["Title"], config.get("Tooltip", ""))
+        if "Callback" in config:
+            btn.clicked.connect(lambda: config["Callback"](btn))
+        self.layout.addWidget(btn)
+        return btn
+
+    def Toggle(self, config):
+        toggle = ArcaneCheckBox(config["Title"], config.get("Tooltip", ""))
+        toggle.setChecked(config.get("Toggled", False))
+        if "Callback" in config:
+            toggle.toggled.connect(lambda checked: config["Callback"](checked))
+        self.layout.addWidget(toggle)
+        return toggle
+
+    def FlagToggle(self, config): 
+        toggle = ArcaneFlagCheckBox(config["Title"], config.get("ColorFlag"), config.get("Tooltip", ""))
+        toggle.setChecked(config.get("Toggled", False))
+        if "Callback" in config:
+            toggle.toggled.connect(lambda checked: config["Callback"](checked))
+        self.layout.addWidget(toggle)
+        self.ui_instance.theme_sensitive_controls.append(toggle)
+        return toggle
+
+    def Slider(self, config):
+        slider_widget = ArcaneSlider(
+            config["Title"],
+            config["Min"],
+            config["Max"],
+            config["Default"],
+            step=config.get("Step", 1),
+            tooltip=config.get("Tooltip", "")
+        )
+        if "Callback" in config:
+            slider_widget.slider.valueChanged.connect(lambda val: config["Callback"](val))
+        self.layout.addWidget(slider_widget)
+        self.ui_instance.theme_sensitive_controls.append(slider_widget)
+        return slider_widget
+
+    def TextBox(self, config):
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(0,0,0,0)
+        
+        container_layout.addWidget(QLabel(config["Title"]))
+        textbox = ArcaneLineEdit(config.get("Default", ""), config.get("Tooltip", ""))
+        
+        if "Callback" in config:
+            textbox.textChanged.connect(lambda text: config["Callback"](text))
+        
+        container_layout.addWidget(textbox)
+        self.layout.addWidget(container)
+        return textbox
