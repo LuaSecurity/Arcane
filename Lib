@@ -419,6 +419,7 @@ class ArcaneUI:
         self.is_visible = True
         self.minimize_key = None
         self.keybind_callback = None
+        self.theme_sensitive_controls = []  # Initialize theme-sensitive controls list
 
     def CreateWindow(self, config):
         window = ArcaneWindow(config, self)
@@ -542,7 +543,7 @@ class ArcaneWindow(QMainWindow):
         
         self.main_frame.setStyleSheet(f"#MainWindowFrame {{border: 2px solid {colors['BORDER']}; border-radius: 14px;}}")
 
-        for control in self.theme_sensitive_controls:
+        for control in self.ui_instance.theme_sensitive_controls:
             if hasattr(control, '_update_value_label_color'):
                 control._update_value_label_color()
             elif hasattr(control, '_apply_flag_color'):
@@ -688,6 +689,7 @@ class ArcaneTab:
             "Callback": config.get("Callback", lambda x: None)
         })
         self.ui_instance.options[name] = slider
+        self.ui_instance.theme_sensitive_controls.append(slider)
         return slider
 
     def AddInput(self, name, config):
