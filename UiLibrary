@@ -20,8 +20,6 @@ UILib:ToggleWatermark(boolean)
 UILib:Step()
 UILib:Destroy()
 
--- Modified for better loading (returns UILib table) and better design (Cyan/Dark theme)
-
 local UILib = {}
 local UILib_mt = {__index = UILib}
 local isDown = false
@@ -40,7 +38,6 @@ local function drawAll(drawings)
     end
 end
 
--- Global variable to keep track of the currently active keybind waiting for input
 local waitingForBind = nil
 
 function UILib:new(identity, initialSize, watermarkActivity)
