@@ -19,7 +19,7 @@ UILib:ToggleMenu(boolean)
 UILib:ToggleWatermark(boolean)
 UILib:Step()
 UILib:Destroy()
-
+]]
 local UILib = {}
 local UILib_mt = {__index = UILib}
 local isDown = false
