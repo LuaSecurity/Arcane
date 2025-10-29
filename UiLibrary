@@ -1,25 +1,3 @@
---[[
-
-v1 x11 ui lib
-@nulare on discord
-
-UILib.new(<string> identity, <Vector2> initialSize, <table> watermarkActivity) -> UILib
-
-UILib:Tab(<string> name) -> tabName
-UILib:Section(<tabName>, <string> name) -> sectionName
-UILib:CreateSettingsTab(<string> customName) -> tabName, sectionName, sectionName
-
-UILib:Checkbox(<tabName>, <sectionName>, <string> label, <boolean> defaultValue, <function> callback)
-UILib:Slider(<tabName>, <sectionName>, <string> label, <number> defaultValue, <function> callback, <number> min, <number> max, <number> step, <string> appendix)
-UILib:Choice(<tabName>, <sectionName>, <string> label, <table> defaultValue, <function | nil> callback, <table> choices, <boolean> multi)
-UILib:Colorpicker(<tabName>, <sectionName>, <string> label, <table[3]> defaultValue, <function | nil> callback)
-UILib:Keybind(<tabName>, <sectionName>, <string> label, <string(Keycode)> defaultValue, <function | nil> callback, <string: 'Hold', 'Toggle', 'Always'> mode)
-
-UILib:ToggleMenu(boolean)
-UILib:ToggleWatermark(boolean)
-UILib:Step()
-UILib:Destroy()
-]]
 local UILib = {}
 local UILib_mt = {__index = UILib}
 local isDown = false
@@ -43,7 +21,6 @@ local waitingForBind = nil
 function UILib:new(identity, initialSize, watermarkActivity)
     local self = setmetatable({}, UILib_mt)
 
-    -- Core configuration
     self.identity = identity or 'UILib'
     self.font = 'Gotham'
     self.fontSize = 13
@@ -51,15 +28,14 @@ function UILib:new(identity, initialSize, watermarkActivity)
     self.headerHeight = 25
     self.itemHeight = 25
     self.padding = 7
-    self.cornerRadius = 6 -- Increased rounding for modern look
+    self.cornerRadius = 6
 
-    -- NEW DESIGN COLOR PALETTE (Dark Gray/Cyan)
-    self.inactive_c = Color3.fromHSV(0, 0, 0.08) -- Very dark background
-    self.active_c = Color3.fromHSV(0, 0, 0.15)  -- Slightly lighter hover/active background
-    self.line_c = Color3.new(0.2, 0.2, 0.2)       -- Border/line color
-    self.font_c = Color3.new(1, 1, 1)             -- White text
-    self.accent_c = Color3.fromHSV(195/360, 0.8, 0.7) -- Vibrant Cyan Blue accent
-    self.watermark_c = self.accent_c              -- Watermark color (matches accent)
+    self.inactive_c = Color3.fromHSV(0, 0, 0.08)
+    self.active_c = Color3.fromHSV(0, 0, 0.15)
+    self.line_c = Color3.new(0.2, 0.2, 0.2)
+    self.font_c = Color3.new(1, 1, 1)
+    self.accent_c = Color3.fromHSV(195/360, 0.8, 0.7)
+    self.watermark_c = self.accent_c
 
     self.position = Vector2.new(100, 100)
     self.initialSize = initialSize or Vector2.new(300, 400)
@@ -68,14 +44,12 @@ function UILib:new(identity, initialSize, watermarkActivity)
     self._tick = os.clock()
     self._activityCallbacks = watermarkActivity or {}
 
-    -- Internal state
     self._tree = {
         _drawings = {},
         _tabs = {},
         _activeTab = nil
     }
 
-    -- Dropdown state
     self._dropdown = {
         _drawings = {},
         _visible = false,
@@ -83,7 +57,6 @@ function UILib:new(identity, initialSize, watermarkActivity)
         _height = 0
     }
 
-    -- Colorpicker state
     self._colorpicker = {
         _drawings = {},
         _visible = false,
@@ -93,23 +66,20 @@ function UILib:new(identity, initialSize, watermarkActivity)
         _color = {255, 0, 0}
     }
 
-    -- Keybind listener setup
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if waitingForBind then
-            if input.UserInputType == Enum.UserInputType.MouseButton3 then -- M3 is used as default keybind for mouse3
+            if input.UserInputType == Enum.UserInputType.MouseButton3 then
                 waitingForBind.value = 'm3'
             elseif input.KeyCode.Name ~= 'Unknown' then
                 waitingForBind.value = string.lower(input.KeyCode.Name)
             else
-                -- Ignore unmappable keys
                 return
             end
-            waitingForBind.drawings[2].Text = waitingForBind.value
-            waitingForBind.drawings[2].Color = self.font_c
+            waitingForBind.drawings[3].Text = waitingForBind.value
+            waitingForBind.drawings[3].Color = self.font_c
             waitingForBind = nil
         else
-            -- Process normal keybinds
             for _, tab in pairs(self._tree._tabs) do
                 for _, section in pairs(tab._sections) do
                     for _, item in pairs(section._items) do
@@ -118,7 +88,7 @@ function UILib:new(identity, initialSize, watermarkActivity)
                                 if item.mode == 'Toggle' then
                                     item.state = not item.state
                                     if item.callback then item.callback(item.state) end
-                                else -- Hold mode
+                                else
                                     item.state = true
                                     if item.callback then item.callback(true) end
                                 end
@@ -132,7 +102,6 @@ function UILib:new(identity, initialSize, watermarkActivity)
 
     UserInputService.InputEnded:Connect(function(input, gameProcessed)
         if gameProcessed then return end
-        -- Process keybinds releasing
         for _, tab in pairs(self._tree._tabs) do
             for _, section in pairs(tab._sections) do
                 for _, item in pairs(section._items) do
@@ -147,7 +116,6 @@ function UILib:new(identity, initialSize, watermarkActivity)
         end
     end)
 
-    -- Create core frame and title bar
     self._frame = Drawing.new('Square')
     self._frame.ZIndex = 1
     self._frame.Color = self.line_c
@@ -158,7 +126,7 @@ function UILib:new(identity, initialSize, watermarkActivity)
     local titleBar = Drawing.new('Square')
     titleBar.ZIndex = 2
     titleBar.Size = Vector2.new(self.size.X, self.headerHeight)
-    titleBar.Color = self.accent_c -- Updated to Cyan Accent
+    titleBar.Color = self.accent_c
     titleBar.Visible = true
     titleBar.Transparency = 0
     table.insert(self._tree._drawings, titleBar)
@@ -181,7 +149,6 @@ function UILib:new(identity, initialSize, watermarkActivity)
     frameBody.Transparency = 0
     table.insert(self._tree._drawings, frameBody)
 
-    -- Watermark
     self.watermark = Drawing.new('Text')
     self.watermark.ZIndex = 999
     self.watermark.Text = self.identity
@@ -190,21 +157,19 @@ function UILib:new(identity, initialSize, watermarkActivity)
     self.watermark.Font = self.font
     self.watermark.Visible = true
     self.watermark.Center = false
-    self.watermark.Position = Vector2.new(mouse.ViewSizeX - 100, 20) -- Default top-right
+    self.watermark.Position = Vector2.new(mouse.ViewSizeX - 100, 20)
     table.insert(self._tree._drawings, self.watermark)
 
-    -- Dragging logic
     titleBar.MouseClick = function()
         self.dragging = true
         local dragStart = os.clock()
-        while self.dragging and os.clock() - dragStart < 0.1 do wait() end -- Debounce
+        while self.dragging and os.clock() - dragStart < 0.1 do wait() end
     end
 
     titleBar.MouseUp = function()
         self.dragging = false
     end
-    
-    -- Toggle menu keybind (INSERT key)
+
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if input.KeyCode == Enum.KeyCode.Insert then
@@ -223,7 +188,7 @@ function UILib:ToggleMenu(state)
         self:_RemoveDropdown()
         self:_RemoveColorpicker()
     end
-    self.watermark.Visible = true -- Watermark always visible
+    self.watermark.Visible = true
 end
 
 function UILib:ToggleWatermark(state)
@@ -241,7 +206,7 @@ function UILib:Tab(name)
 
     local tabDraw = Drawing.new('Square')
     tabDraw.ZIndex = 3
-    tabDraw.Color = self.active_c -- Tab background color
+    tabDraw.Color = self.active_c
     tabDraw.Visible = false
     tabDraw.Transparency = 0
     table.insert(self._tree._drawings, tabDraw)
@@ -258,12 +223,10 @@ function UILib:Tab(name)
     table.insert(self._tree._drawings, tabText)
     table.insert(tab._drawings, tabText)
 
-    -- Tab button click logic
     tabDraw.MouseClick = function()
         self._tree._activeTab = tabName
     end
 
-    -- Automatically set the first tab as active
     if not self._tree._activeTab then
         self._tree._activeTab = tabName
     end
@@ -287,7 +250,7 @@ function UILib:Section(tabName, name)
     header.ZIndex = 3
     header.Text = name
     header.Size = self.fontSize
-    header.Color = self.accent_c -- Section title uses Accent Color
+    header.Color = self.accent_c
     header.Font = self.font
     header.Visible = false
     header.Center = false
@@ -297,7 +260,6 @@ function UILib:Section(tabName, name)
     return sectionName
 end
 
--- Helper to create settings tab common to many UIs
 function UILib:CreateSettingsTab(customName)
     local tabName = self:Tab(customName or 'Settings')
     local tab = self._tree._tabs[tabName]
@@ -308,20 +270,17 @@ function UILib:CreateSettingsTab(customName)
     local visualsTab = self._tree._tabs[tabName]
     local visualsSectionObj = visualsTab._sections[visualsSection]
 
-    -- Menu Toggle
     self:Keybind(tabName, visualsSection, 'Menu Toggle', 'insert', nil, 'Toggle')
 
-    -- Watermark Toggle
     local watermarkState = true
     self:Checkbox(tabName, visualsSection, 'Watermark', watermarkState, function(state)
         watermarkState = state
         self:ToggleWatermark(state)
     end)
-    
+
     return tabName, visualsSection, keybindsSection
 end
 
--- ITEM WIDGETS
 function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     local tab = self._tree._tabs[tabName]
     local section = tab._sections[sectionName]
@@ -336,7 +295,6 @@ function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     }
     table.insert(section._items, item)
 
-    -- Label text
     local text = Drawing.new('Text')
     text.ZIndex = 3
     text.Text = label
@@ -348,21 +306,19 @@ function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     table.insert(self._tree._drawings, text)
     table.insert(item._drawings, text)
 
-    -- Checkbox box (background)
     local box = Drawing.new('Square')
     box.ZIndex = 3
-    box.Color = self.line_c -- Border color
+    box.Color = self.line_c
     box.Visible = false
     box.Transparency = 0
     box.Size = Vector2.new(self.itemHeight - 10, self.itemHeight - 10)
-    box.Rounding = 3 -- Slight rounding for the box
+    box.Rounding = 3
     table.insert(self._tree._drawings, box)
     table.insert(item._drawings, box)
 
-    -- Checkbox fill
     local fill = Drawing.new('Square')
     fill.ZIndex = 4
-    fill.Color = self.accent_c -- Checkbox fill uses Accent Color
+    fill.Color = self.accent_c
     fill.Visible = item.state
     fill.Transparency = 0
     fill.Size = Vector2.new(self.itemHeight - 14, self.itemHeight - 14)
@@ -370,7 +326,6 @@ function UILib:Checkbox(tabName, sectionName, label, defaultValue, callback)
     table.insert(self._tree._drawings, fill)
     table.insert(item._drawings, fill)
 
-    -- Click handler
     box.MouseClick = function()
         item.state = not item.state
         if item.callback then item.callback(item.state) end
@@ -396,7 +351,6 @@ function UILib:Slider(tabName, sectionName, label, defaultValue, callback, min, 
     }
     table.insert(section._items, item)
 
-    -- Label text
     local text = Drawing.new('Text')
     text.ZIndex = 3
     text.Text = label
@@ -408,33 +362,30 @@ function UILib:Slider(tabName, sectionName, label, defaultValue, callback, min, 
     table.insert(self._tree._drawings, text)
     table.insert(item._drawings, text)
 
-    -- Value text
     local valueText = Drawing.new('Text')
     valueText.ZIndex = 3
     valueText.Text = tostring(defaultValue) .. appendix
     valueText.Size = self.fontSize
-    valueText.Color = self.accent_c -- Value text uses Accent Color
+    valueText.Color = self.accent_c
     valueText.Font = self.font
     valueText.Visible = false
     valueText.Center = false
     table.insert(self._tree._drawings, valueText)
     table.insert(item._drawings, valueText)
 
-    -- Track background
     local trackBg = Drawing.new('Square')
     trackBg.ZIndex = 3
-    trackBg.Color = self.active_c -- Lighter active color for track
+    trackBg.Color = self.active_c
     trackBg.Visible = false
     trackBg.Transparency = 0
-    trackBg.Size = Vector2.new(self.size.X * 0.7, 5) -- Fixed height
+    trackBg.Size = Vector2.new(self.size.X * 0.7, 5)
     trackBg.Rounding = 2
     table.insert(self._tree._drawings, trackBg)
     table.insert(item._drawings, trackBg)
 
-    -- Track fill
     local trackFill = Drawing.new('Square')
     trackFill.ZIndex = 4
-    trackFill.Color = self.accent_c -- Fill uses Accent Color
+    trackFill.Color = self.accent_c
     trackFill.Visible = false
     trackFill.Transparency = 0
     trackFill.Size = Vector2.new(0, 5)
@@ -442,17 +393,15 @@ function UILib:Slider(tabName, sectionName, label, defaultValue, callback, min, 
     table.insert(self._tree._drawings, trackFill)
     table.insert(item._drawings, trackFill)
 
-    -- Track handle
     local handle = Drawing.new('Circle')
     handle.ZIndex = 5
-    handle.Color = self.accent_c -- Handle uses Accent Color
+    handle.Color = self.accent_c
     handle.Visible = false
     handle.Transparency = 0
     handle.Radius = 6
     table.insert(self._tree._drawings, handle)
     table.insert(item._drawings, handle)
 
-    -- Dragging logic
     trackBg.MouseClick = function()
         item._dragging = true
     end
@@ -481,11 +430,10 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
         choices = choices,
         multi = multi or false,
         _dropdownVisible = false,
-        _activeDropdown = nil -- Self reference for step loop
+        _activeDropdown = nil
     }
     table.insert(section._items, item)
 
-    -- Label text
     local text = Drawing.new('Text')
     text.ZIndex = 3
     text.Text = label
@@ -497,10 +445,9 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
     table.insert(self._tree._drawings, text)
     table.insert(item._drawings, text)
 
-    -- Value text
+    local displayValue = multi and (#item.values > 0 and table.concat(item.values, ', ') or 'None selected') or (item.values[1] or 'Select one')
     local valueText = Drawing.new('Text')
     valueText.ZIndex = 3
-    local displayValue = multi and (#item.values > 0 and table.concat(item.values, ', ') or 'None selected') or (item.values[1] or 'Select one')
     valueText.Text = displayValue
     valueText.Size = self.fontSize
     valueText.Color = self.accent_c
@@ -510,10 +457,9 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
     table.insert(self._tree._drawings, valueText)
     table.insert(item._drawings, valueText)
 
-    -- Dropdown box (for clicking)
     local box = Drawing.new('Square')
     box.ZIndex = 3
-    box.Color = self.active_c -- Lighter background for the input box
+    box.Color = self.active_c
     box.Visible = false
     box.Transparency = 0
     box.Size = Vector2.new(self.size.X * 0.45, self.itemHeight - 10)
@@ -521,12 +467,11 @@ function UILib:Choice(tabName, sectionName, label, defaultValue, callback, choic
     table.insert(self._tree._drawings, box)
     table.insert(item._drawings, box)
 
-    -- Click handler
     box.MouseClick = function()
         if self._dropdown._visible and self._dropdown._item == item then
             self:_RemoveDropdown()
         else
-            self:_RemoveDropdown() -- Close existing one
+            self:_RemoveDropdown()
             self:_CreateDropdown(item)
         end
     end
@@ -541,13 +486,12 @@ function UILib:Colorpicker(tabName, sectionName, label, defaultValue, callback)
         _type = 'Colorpicker',
         _label = label,
         _drawings = {},
-        color = defaultValue or {255, 255, 255}, -- RGB 0-255
+        color = defaultValue or {255, 255, 255},
         callback = callback,
         _dragging = false
     }
     table.insert(section._items, item)
 
-    -- Label text
     local text = Drawing.new('Text')
     text.ZIndex = 3
     text.Text = label
@@ -559,7 +503,6 @@ function UILib:Colorpicker(tabName, sectionName, label, defaultValue, callback)
     table.insert(self._tree._drawings, text)
     table.insert(item._drawings, text)
 
-    -- Preview Box
     local box = Drawing.new('Square')
     box.ZIndex = 3
     box.Color = Color3.new(item.color[1]/255, item.color[2]/255, item.color[3]/255)
@@ -570,12 +513,11 @@ function UILib:Colorpicker(tabName, sectionName, label, defaultValue, callback)
     table.insert(self._tree._drawings, box)
     table.insert(item._drawings, box)
 
-    -- Click handler
     box.MouseClick = function()
         if self._colorpicker._visible and self._colorpicker._item == item then
             self:_RemoveColorpicker()
         else
-            self:_RemoveColorpicker() -- Close existing one
+            self:_RemoveColorpicker()
             self:_CreateColorpicker(item)
         end
     end
@@ -592,13 +534,12 @@ function UILib:Keybind(tabName, sectionName, label, defaultValue, callback, mode
         _drawings = {},
         value = defaultValue:lower(),
         callback = callback,
-        mode = mode or 'Hold', -- 'Hold', 'Toggle', 'Always'
-        state = (mode == 'Always'), -- Initial state for 'Always'
+        mode = mode or 'Hold',
+        state = (mode == 'Always'),
         _waiting = false
     }
     table.insert(section._items, item)
 
-    -- Label text
     local text = Drawing.new('Text')
     text.ZIndex = 3
     text.Text = label .. ' [' .. mode .. ']'
@@ -610,10 +551,9 @@ function UILib:Keybind(tabName, sectionName, label, defaultValue, callback, mode
     table.insert(self._tree._drawings, text)
     table.insert(item._drawings, text)
 
-    -- Keybind display box
     local box = Drawing.new('Square')
     box.ZIndex = 3
-    box.Color = self.active_c -- Lighter background for the key display
+    box.Color = self.active_c
     box.Visible = false
     box.Transparency = 0
     box.Size = Vector2.new(self.size.X * 0.25, self.itemHeight - 10)
@@ -621,7 +561,6 @@ function UILib:Keybind(tabName, sectionName, label, defaultValue, callback, mode
     table.insert(self._tree._drawings, box)
     table.insert(item._drawings, box)
 
-    -- Keybind text
     local bindText = Drawing.new('Text')
     bindText.ZIndex = 4
     bindText.Text = item.value
@@ -633,20 +572,17 @@ function UILib:Keybind(tabName, sectionName, label, defaultValue, callback, mode
     table.insert(self._tree._drawings, bindText)
     table.insert(item._drawings, bindText)
 
-    -- Click handler
     box.MouseClick = function()
         if waitingForBind then
-            -- Reset previous bind button if another is clicked
-            waitingForBind.drawings[2].Text = waitingForBind.value
-            waitingForBind.drawings[2].Color = self.font_c
+            waitingForBind.drawings[3].Text = waitingForBind.value
+            waitingForBind.drawings[3].Color = self.font_c
         end
         waitingForBind = item
-        waitingForBind.drawings[2].Text = '...'
-        waitingForBind.drawings[2].Color = self.accent_c -- Highlight keybind text when waiting
+        waitingForBind.drawings[3].Text = '...'
+        waitingForBind.drawings[3].Color = self.accent_c
     end
 end
 
--- Internal dropdown/colorpicker logic
 function UILib:_RemoveDropdown()
     for _, drawing in pairs(self._dropdown._drawings) do
         drawing:Remove()
@@ -660,17 +596,16 @@ end
 function UILib:_CreateDropdown(item)
     self._dropdown._visible = true
     self._dropdown._item = item
-    
+
     local choiceCount = #item.choices
     local dropdownHeight = choiceCount * self.itemHeight + self.padding * 2
     local dropdownWidth = self.size.X * 0.45 + self.padding * 2
-    
+
     local tabX = self.position.X + self.padding + self.size.X * 0.5
     local tabY = item._drawings[3].Position.Y
 
     self._dropdown._height = dropdownHeight
 
-    -- Dropdown frame
     local frame = Drawing.new('Square')
     frame.ZIndex = 10
     frame.Color = self.line_c
@@ -691,7 +626,6 @@ function UILib:_CreateDropdown(item)
     body.Rounding = 5
     table.insert(self._dropdown._drawings, body)
 
-    -- Dropdown items
     for i, choice in ipairs(item.choices) do
         local choiceY = tabY + self.padding + (i - 1) * self.itemHeight
 
@@ -716,14 +650,13 @@ function UILib:_CreateDropdown(item)
         text.Center = false
         table.insert(self._dropdown._drawings, text)
 
-        -- Current selection check/indicator
         if table.find(item.values, choice) then
             box.Color = self.accent_c
         end
 
         box.MouseClick = function()
             local selectedIndex = table.find(item.values, choice)
-            
+
             if item.multi then
                 if selectedIndex then
                     table.remove(item.values, selectedIndex)
@@ -735,14 +668,11 @@ function UILib:_CreateDropdown(item)
                 self:_RemoveDropdown()
             end
 
-            -- Update UI value text
             local displayValue = item.multi and (#item.values > 0 and table.concat(item.values, ', ') or 'None selected') or (item.values[1] or 'Select one')
             item._drawings[2].Text = displayValue
-            
-            -- Call callback
+
             if item.callback then item.callback(item.values) end
-            
-            -- Re-create dropdown to update selection colors if multi-select
+
             if item.multi then
                 self:_RemoveDropdown()
                 self:_CreateDropdown(item)
@@ -764,12 +694,10 @@ function UILib:_CreateColorpicker(item)
     self._colorpicker._visible = true
     self._colorpicker._item = item
 
-    -- Base position calculation (next to item box)
     local boxPos = item._drawings[2].Position
     local pickerPos = Vector2.new(boxPos.X + item._drawings[2].Size.X + 10, boxPos.Y)
     self._colorpicker._pos = pickerPos
-    
-    -- Colorpicker Frame (simplified for example)
+
     local frame = Drawing.new('Square')
     frame.ZIndex = 10
     frame.Color = self.line_c
@@ -790,10 +718,9 @@ function UILib:_CreateColorpicker(item)
     body.Rounding = 5
     table.insert(self._colorpicker._drawings, body)
 
-    -- Add saturation/value square and hue slider (simplified placeholders)
     local colorArea = Drawing.new('Square')
     colorArea.ZIndex = 12
-    colorArea.Color = Color3.new(1, 1, 1) -- Placeholder color
+    colorArea.Color = Color3.new(1, 1, 1)
     colorArea.Visible = true
     colorArea.Transparency = 0
     colorArea.Size = Vector2.new(self._colorpicker._size.X - 20, self._colorpicker._size.Y - 50)
@@ -811,18 +738,15 @@ function UILib:_CreateColorpicker(item)
     text.Visible = true
     text.Center = true
     table.insert(self._colorpicker._drawings, text)
-    
-    -- In a full implementation, you'd add complex gradient drawings for saturation/hue and drag logic here
+
 end
 
 
--- Main loop function
 function UILib:Step()
-    if not self._tree then return end -- Check for destruction
+    if not self._tree then return end
 
     local mousePos = Vector2.new(mouse.X, mouse.Y)
 
-    -- Watermark update
     local activityText = ''
     for i, activity in ipairs(self._activityCallbacks) do
         local text = activity()
@@ -832,7 +756,6 @@ function UILib:Step()
     self.watermark.Text = self.identity .. ' | ' .. activityText
     self.watermark.Position = Vector2.new(mouse.ViewSizeX - 10 - self.watermark.Size.X, 20)
 
-    -- Menu dragging
     if self.dragging then
         self.position = Vector2.new(
             math.max(0, math.min(mousePos.X - self.size.X / 2, mouse.ViewSizeX - self.size.X)),
@@ -840,17 +763,14 @@ function UILib:Step()
         )
     end
 
-    -- Update core frame drawings
     local coreDrawings = self._tree._drawings
     local x = self.position.X
     local y = self.position.Y
 
-    -- Main frame (border)
     coreDrawings[1].Position = Vector2.new(x, y)
     coreDrawings[1].Size = self.size
     coreDrawings[1].Rounding = self.cornerRadius + 2
 
-    -- Title bar
     coreDrawings[2].Position = Vector2.new(x + 1, y + 1)
     coreDrawings[2].Size = Vector2.new(self.size.X - 2, self.headerHeight)
     coreDrawings[2].Rounding = self.cornerRadius + 1
@@ -859,10 +779,8 @@ function UILib:Step()
     coreDrawings[2].CornerBottomLeft = false
     coreDrawings[2].CornerBottomRight = false
 
-    -- Title bar text
     coreDrawings[3].Position = Vector2.new(x + self.padding, y + self.headerHeight / 2 - self.fontSize / 2)
 
-    -- Frame body
     coreDrawings[4].Position = Vector2.new(x + 1, y + self.headerHeight + 1)
     coreDrawings[4].Size = Vector2.new(self.size.X - 2, self.size.Y - self.headerHeight - 2)
     coreDrawings[4].Rounding = self.cornerRadius + 1
@@ -871,13 +789,12 @@ function UILib:Step()
     coreDrawings[4].CornerBottomLeft = true
     coreDrawings[4].CornerBottomRight = true
 
-    -- Tab buttons
     local tabCount = #self._tree._tabs
     local tabButtonW = (self.size.X - self.padding * (tabCount + 1)) / tabCount
     local tabButtonY = y + self.headerHeight + self.padding
 
-    local tabButtonDrawings = {} -- Store references for quick access
-    local tabIndex = 5 -- Index after core drawings (1-4)
+    local tabButtonDrawings = {}
+    local tabIndex = 5
     for _, tab in pairs(self._tree._tabs) do
         table.insert(tabButtonDrawings, tab._drawings)
         tabIndex = tabIndex + #tab._drawings
@@ -898,18 +815,15 @@ function UILib:Step()
         else
             drawAll(tab._drawings)
 
-            -- Tab box
             tabDraw.Position = Vector2.new(currentTabX, tabButtonY)
             tabDraw.Size = Vector2.new(tabButtonW, self.tabHeight)
             tabDraw.Rounding = self.cornerRadius - 2
 
-            -- Tab text
             tabText.Position = Vector2.new(currentTabX + tabButtonW / 2, tabButtonY + self.tabHeight / 2 - self.fontSize / 2)
 
-            -- Color logic
             if tabName == self._tree._activeTab then
                 tabDraw.Color = self.accent_c
-                tabText.Color = Color3.new(0, 0, 0) -- Black text on cyan accent
+                tabText.Color = Color3.new(0, 0, 0)
             else
                 tabDraw.Color = self.active_c
                 tabText.Color = self.font_c
@@ -919,7 +833,6 @@ function UILib:Step()
         currentTabX = currentTabX + tabButtonW + self.padding
     end
 
-    -- Tab content and sections
     local activeTab = self._tree._tabs[self._tree._activeTab]
     if activeTab then
         local sectionX = x + self.padding
@@ -939,113 +852,92 @@ function UILib:Step()
             else
                 drawAll(sectionDraws)
 
-                -- Header text
                 headerText.Position = Vector2.new(sectionX, sectionY + totalSectionH + self.padding)
 
-                -- Item drawing logic
                 local itemY = sectionY + totalSectionH + self.headerHeight
 
                 for _, sectionItem in ipairs(section._items) do
                     local itemDraws = sectionItem._drawings
                     local itemX = x + self.padding
-                    
+
                     if not coreDrawings[1].Visible then
                         undrawAll(itemDraws)
                     else
                         drawAll(itemDraws)
-                        
-                        -- Base item position (Label text is always first)
+
                         itemDraws[1].Position = Vector2.new(itemX, itemY)
 
                         if sectionItem._type == 'Checkbox' then
-                            -- Box (2)
                             itemDraws[2].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[2].Size.X, itemY + self.itemHeight/2 - itemDraws[2].Size.Y/2)
-                            -- Fill (3)
                             itemDraws[3].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[3].Size.X - 2, itemY + self.itemHeight/2 - itemDraws[3].Size.Y/2)
                             itemDraws[3].Visible = sectionItem.state
-                        
+
                         elseif sectionItem._type == 'Slider' then
-                            -- Value text (2)
                             itemDraws[2].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[2].Size.X, itemY)
-                            
+
                             local trackBg = itemDraws[3]
                             local trackFill = itemDraws[4]
                             local handle = itemDraws[5]
-                            
+
                             local trackW = self.size.X * 0.7
-                            local trackX = x + self.size.X/2 - trackW/2 -- Center slider horizontally
+                            local trackX = x + self.size.X/2 - trackW/2
                             local trackY = itemY + self.itemHeight + 5
 
-                            -- Track Background (3)
                             trackBg.Position = Vector2.new(trackX, trackY)
                             trackBg.Size = Vector2.new(trackW, 5)
 
-                            -- Dragging/Value logic
                             if sectionItem._dragging then
                                 local normalized = math.min(1, math.max(0, (mousePos.X - trackX) / trackW))
                                 local value = normalized * (sectionItem.max - sectionItem.min) + sectionItem.min
-                                value = math.floor(value / sectionItem.step) * sectionItem.step -- Apply step
+                                value = math.floor(value / sectionItem.step) * sectionItem.step
                                 sectionItem.value = math.max(sectionItem.min, math.min(sectionItem.max, value))
 
                                 if sectionItem.callback then sectionItem.callback(sectionItem.value) end
                             end
 
-                            -- Recalculate normalized for display
                             local normalized = (sectionItem.value - sectionItem.min) / (sectionItem.max - sectionItem.min)
 
-                            -- Track Fill (4)
                             trackFill.Position = Vector2.new(trackX, trackY)
                             trackFill.Size = Vector2.new(trackW * normalized, 5)
 
-                            -- Handle (5)
                             handle.Position = Vector2.new(trackX + trackW * normalized, trackY + 2.5)
 
-                            -- Value Text Update (2)
                             itemDraws[2].Text = tostring(math.floor(sectionItem.value)) .. sectionItem.appendix
                             itemDraws[2].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[2].Size.X, itemY)
 
-                            totalSectionH_1 = totalSectionH_1 + self.itemHeight + 10 -- Add extra space for slider track
+                            totalSectionH_1 = totalSectionH_1 + self.itemHeight + 10
 
                         elseif sectionItem._type == 'Choice' then
-                            -- Value text (2)
                             itemDraws[2].Position = Vector2.new(x + self.size.X * 0.55 + 5, itemY)
-                            -- Dropdown box (3)
                             itemDraws[3].Position = Vector2.new(x + self.size.X * 0.55, itemY + self.itemHeight/2 - itemDraws[3].Size.Y/2)
-                            
-                            -- Handle dropdown visibility (external)
+
                             local box = itemDraws[3]
                             if self._dropdown._visible and self._dropdown._item == sectionItem then
-                                -- Active dropdown
                                 box.Color = self.accent_c
                             else
                                 box.Color = self.active_c
                             end
 
                         elseif sectionItem._type == 'Colorpicker' then
-                            -- Preview box (2)
                             itemDraws[2].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[2].Size.X, itemY + self.itemHeight/2 - itemDraws[2].Size.Y/2)
                             itemDraws[2].Color = Color3.new(sectionItem.color[1]/255, sectionItem.color[2]/255, sectionItem.color[3]/255)
-                            
-                            -- Handle colorpicker visibility (external)
+
                             if self._colorpicker._visible and self._colorpicker._item == sectionItem then
-                                itemDraws[2].Rounding = 6 -- Increase rounding slightly when active/open
+                                itemDraws[2].Rounding = 6
                             else
                                 itemDraws[2].Rounding = 3
                             end
 
                         elseif sectionItem._type == 'Keybind' then
-                            -- Display box (2)
                             itemDraws[2].Position = Vector2.new(x + self.size.X - self.padding - itemDraws[2].Size.X, itemY + self.itemHeight/2 - itemDraws[2].Size.Y/2)
-                            -- Key text (3)
                             itemDraws[3].Position = Vector2.new(itemDraws[2].Position.X + itemDraws[2].Size.X/2, itemY + self.itemHeight/2 - self.fontSize/2)
 
-                            -- Color when waiting for bind
                             if waitingForBind == sectionItem then
                                 itemDraws[2].Color = self.accent_c
                             else
                                 itemDraws[2].Color = self.active_c
                             end
-                            
+
                         end
 
                         itemY = itemY + self.itemHeight
@@ -1059,21 +951,17 @@ function UILib:Step()
         end
     end
 
-    -- finalize all input
     self._tick = os.clock()
 end
 
 function UILib:Destroy()
-    -- remove core
     for _, drawing in pairs(self._tree['_drawings']) do
         drawing:Remove()
     end
 
-    -- remove dropdown
     self:_RemoveDropdown()
     self:_RemoveColorpicker()
 
-    -- remove tree
     for _, tab in pairs(self._tree['_tabs']) do
         if tab['_drawings'] then
             for _, drawing in pairs(tab['_drawings']) do
@@ -1086,7 +974,7 @@ function UILib:Destroy()
                 for _, drawing in pairs(section['_drawings']) do
                     drawing:Remove()
                 end
-                
+
                 if section._items then
                     for _, item in pairs(section._items) do
                         for _, drawing in pairs(item['_drawings']) do
